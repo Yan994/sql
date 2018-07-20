@@ -1,0 +1,116 @@
+﻿SQL 结构化查询语言
+
+数据类型-数值类型
+
+数值类型     字节          存储范围
+TINYINT       1 (1*8)     有符号：-128~127 (2^7) 无符号：0~255    小整数型
+SMALLINT      2 (2*8)     有符号：-2^15~2^15-1   无符号：0~2^16-1
+MEDIUMINT     3 (3*8)     有符号：-2^23~2^23-1   无符号：0~2^24-1
+INT           4 (4*8)     有符号：-2^31~2^31-1   无符号：0~2^32-1
+BIGINT        8 (8*8)     有符号：-2^63~2^63-1   无符号：0~2^64-1
+FLOAT(M,D)    4           代表共M位整数，其中D位位于小数点后面
+DOUBLE(M,D)   8
+
+M取值范围为0~255，float只保证6位有效数字的准确性，所以float(M,D)中，M<=6时，数字通常是准确的。
+D取值范围为0~30，同时必须<=M。double只保证16位有效数字的准确性，所以double(M,D)中，M<=16时，数字通常是准确的。
+若M的定义分别超出7和17，则多出的有效数字部分，取值是不定的，要避免使用“=”来判断两个数是否相等。
+
+数据类型-日期类型
+
+日期和时间类型  字节  最小值                最大值
+DATE             4    1000-01-01            9999-12-31
+DATETIME         8    1000-01-01 00:00:00   9999-12-31 23:59:59
+TIMESTAMP        4    19700101080001        2038年某个时刻
+TIME             3    -838:59:59            838:59:59
+YEAR             1    1901                  2155
+
+例：创建表查看不同日期类型显示今天，插入值
+create table d(c1 date, c2 time, c3 datetime, c4 timestamp, c5 year);
+insert into d values(now(),now(),now(),now(),now());
+select*from d
+
+数据类型-字符串类型
+
+字符串类型  字节   描述
+CHAR(M)      M     M为0~255之间的整数     固定长度（如身份证号18位），存储时字符串右边不能有空格，因为检索时会被删除。
+VARCHAR(M)         M为0~65535之间的整数，值的长度+1个字节    长度可变，推荐使用
+BLOB               允许长度0~65535字节，值的长度+2个字节（为了记录长度）
+TEXT               允许长度0~65535字节，值的长度+2个字节
+
+blob ，二进制大对象，可以用来存储大量的字符串
+细分：tinyblob,tinytext 255字节；blob,text 64k; mediumblob,mediumtext 16M; longblob,longtext 4G
+
+SQL分类：
+
+DDL语句：数据定义语言，对数据段、数据库、表、列索引等数据库对象进行定义，常用create/drop/alter
+DML语句：数据操纵语言，添加、删除、更新、查询数据库记录，并检查数据完整性，常用insert/delete/update/select
+DCL语句：数据控制语言，控制不同数据段直接的许可和访问级别的语句，常用grant/revoke等。
+
+创建数据库：
+create database my_db
+
+创建数据库中的表：
+create table Persons
+(
+id_P int not null primary key,
+LastName varchar(255) not null,
+FirstName varchar(255),
+Address varchar(255),
+City varchar(255) default'Beijing'
+)
+或者添加行：
+unique(id_P)
+primary key (id_P)
+
+SQL约束：
+可在创建表时规定，或者在表创建后（通过alter table语句）
+not null; unique; primary key; foreign key; check; default
+
+索引index
+更新一个包含索引的表需要比更新一个没有索引的表更多的时间，因此仅仅在常常被搜索的列（以及表）上面创建索引。
+在表上创建一个唯一的索引：
+create unique index index_name on table_name (column_name)
+
+删除drop
+alter table table1 drop index index1   删除索引
+drop table table1   删除表
+drop database database1 删除数据库
+truncate table table1  仅删除表格中的数据而不删除表
+
+在已有表中添加、修改或删除列alter
+alter table Persons add Birthday date   在表中添加列
+alter table Persons alter column Birthday year  改变表中列的数据类型
+alter table Persons drop column Birthday   在表中删除列
+
+auto increment会在新纪录插入表中时生成一个唯一的数字，默认开始值为1，每条新纪录递增1。
+每次插入新纪录时，自动地创建主键字段的值：
+create table Persons
+(
+id_P int not null auto_increment,
+LastName varchar(255) not null,
+FirstName varchar(255),
+primary key (id_P)
+)
+
+视图：包含行和列，基于SQL语句的结果集的可视化的表，总是显示最近的数据。
+create view view_name as 
+select column_name(s) from table1 where condition
+例：create view [Current Product List] as 
+select ProductID,ProductName from Products where Discontinued=No
+
+向表格中插入新的行：insert into
+insert into table1 values(值1,值2,...)
+插入列：
+insert into table1 (列1,列2,...) values (值1,值2,...)
+加值加单引号，加列列名不用加引号
+
+修改表中数据：update
+update Persons set FirstName='Fred' where LastName='Wilson'
+更新某一行中的若干列：
+update Persons set Address='Zhongshan23',City='Nanjing' where LastName='wilson'
+
+删除某行：delete
+delete from Persons where LastName='Wilson'
+删除所有行
+delete from table1
+
