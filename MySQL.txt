@@ -1,5 +1,8 @@
 ﻿SQL 结构化查询语言
 
+
+#class1
+
 数据类型-数值类型
 
 数值类型     字节          存储范围
@@ -67,12 +70,15 @@ SQL约束：
 not null; unique; primary key; foreign key; check; default
 
 索引index
+便于查询数据
 更新一个包含索引的表需要比更新一个没有索引的表更多的时间，因此仅仅在常常被搜索的列（以及表）上面创建索引。
 在表上创建一个唯一的索引：
 create unique index index_name on table_name (column_name)
 
+
 删除drop
 alter table table1 drop index index1   删除索引
+drop index index1 on table1  删除索引
 drop table table1   删除表
 drop database database1 删除数据库
 truncate table table1  仅删除表格中的数据而不删除表
@@ -81,6 +87,10 @@ truncate table table1  仅删除表格中的数据而不删除表
 alter table Persons add Birthday date   在表中添加列
 alter table Persons alter column Birthday year  改变表中列的数据类型
 alter table Persons drop column Birthday   在表中删除列
+alter table Persons drop primary key   在表中删除primary key
+alter table Persons add index index_name(column_list)   在表中创建普通索引
+alter table Persons add unique(column_list)   在表中创建unique索引
+alter table Persons add primary key(column_list)   在表中创建primary key索引
 
 auto increment会在新纪录插入表中时生成一个唯一的数字，默认开始值为1，每条新纪录递增1。
 每次插入新纪录时，自动地创建主键字段的值：
@@ -113,4 +123,25 @@ update Persons set Address='Zhongshan23',City='Nanjing' where LastName='wilson'
 delete from Persons where LastName='Wilson'
 删除所有行
 delete from table1
+
+
+#class2
+
+在MySQL中，主要有四种类型的索引，分别为：B-Tree索引，Hash索引，Fulltext索引和R-Tree索引。其中，B-Tree索引最为常见。
+
+Innodb与MyISAM的区别：
+MyISAM的索引和数据是分开的，索引文件仅保存数据记录的地址，并且索引是有压缩的，内存使用率就对应提高了不少。能加载更多索引，而Innodb是索引和数据是紧密捆绑的，没有使用压缩从而会造成Innodb比MyISAM体积庞大不小。
+MyISAM缓存在内存的是索引，不是数据。而InnoDB缓存在内存的是数据，数据文件本身就是索引文件，相对来说，服务器内存越大，InnoDB发挥的优势越大。
+
+联合索引：
+1.需要加索引的字段，要在where条件中
+2.数据量少的字段不需要加索引
+3.如果where条件中时or关系，加索引不起作用
+4.符合最左原则，即当索引是key index(a,b,c)时，可以支持a或a,b或a,b,c3种组合进行查找，但不支持b,c查找，当最左侧字段是常量引用时，索引就十分有效。
+索引中列的顺序需要明确，比如查询'李%'和'%四'，前一个会走索引，对后一个来说索引无用。即对索引中的所有列执行搜索或仅对前几列执行搜索时，复合索引非常有用。
+
+primary key(id)
+index(name, age, address)
+where后面一定要按照列名的顺序
+explain 对select进行解释
 
