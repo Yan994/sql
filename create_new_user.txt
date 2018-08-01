@@ -1,0 +1,232 @@
+﻿mysql> #使用mysql数据库
+    -> USE mysql;
+Query OK, 0 rows affected
+
+mysql> #创建新用户
+    -> CREATE USER yan2 IDENTIFIED BY '123456';
+Query OK, 0 rows affected
+
+mysql> #查看下用户yan2的权限
+    -> SELECT * FROM USER WHERE USER='yan2';
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+| Host | User | Select_priv | Insert_priv | Update_priv | Delete_priv | Create_priv | Drop_priv | Reload_priv | Shutdown_priv | Process_priv | File_priv | Grant_priv | References_priv | Index_priv | Alter_priv | Show_db_priv | Super_priv | Create_tmp_table_priv | Lock_tables_priv | Execute_priv | Repl_slave_priv | Repl_client_priv | Create_view_priv | Show_view_priv | Create_routine_priv | Alter_routine_priv | Create_user_priv | Event_priv | Trigger_priv | Create_tablespace_priv | ssl_type | ssl_cipher | x509_issuer | x509_subject | max_questions | max_updates | max_connections | max_user_connections | plugin                | authentication_string                                                | password_expired | password_last_changed | password_lifetime | account_locked | Create_role_priv | Drop_role_priv | Password_reuse_history | Password_reuse_time |
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+| %    | yan2 | N           | N           | N           | N           | N           | N         | N           | N             | N            | N         | N          | N               | N          | N          | N            | N          | N                     | N                | N            | N               | N                | N                | N              | N                   | N                  | N                | N          | N            | N                      |          |            |             |              |             0 |           0 |               0 |                    0 | caching_sha2_password | $A$005$(u!rL4PWbXWw_,BbpLhGSRYoGceaeHQ4HmOtTpq3n9dVB1uVtExco0SEec3 | N                |   2018-07-26 10:40:28 | NULL              | N              | N                | N              | NULL                   | NULL                |
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+1 row in set
+
+mysql> SHOW GRANTS FOR yan2;
++------------------------------------------------------------------+
+| Grants for yan2@%                                                |
++------------------------------------------------------------------+
+| GRANT USAGE ON *.* TO `yan2`@`%`                                 |
+| GRANT SELECT, INSERT, UPDATE, EXECUTE ON `mysql`.* TO `yan2`@`%` |
++------------------------------------------------------------------+
+2 rows in set
+
+mysql> #再次查询权限
+    -> SELECT * FROM USER WHERE USER='yan2';
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+| Host | User | Select_priv | Insert_priv | Update_priv | Delete_priv | Create_priv | Drop_priv | Reload_priv | Shutdown_priv | Process_priv | File_priv | Grant_priv | References_priv | Index_priv | Alter_priv | Show_db_priv | Super_priv | Create_tmp_table_priv | Lock_tables_priv | Execute_priv | Repl_slave_priv | Repl_client_priv | Create_view_priv | Show_view_priv | Create_routine_priv | Alter_routine_priv | Create_user_priv | Event_priv | Trigger_priv | Create_tablespace_priv | ssl_type | ssl_cipher | x509_issuer | x509_subject | max_questions | max_updates | max_connections | max_user_connections | plugin                | authentication_string                                                | password_expired | password_last_changed | password_lifetime | account_locked | Create_role_priv | Drop_role_priv | Password_reuse_history | Password_reuse_time |
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+| %    | yan2 | N           | N           | N           | N           | N           | N         | N           | N             | N            | N         | N          | N               | N          | N          | N            | N          | N                     | N                | N            | N               | N                | N                | N              | N                   | N                  | N                | N          | N            | N                      |          |            |             |              |             0 |           0 |               0 |                    0 | caching_sha2_password | $A$005$(u!rL4PWbXWw_,BbpLhGSRYoGceaeHQ4HmOtTpq3n9dVB1uVtExco0SEec3 | N                |   2018-07-26 10:40:28 | NULL              | N              | N                | N              | NULL                   | NULL                |
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+1 row in set
+
+mysql> #给用户yan2在所有数据库上赋予EXECUTE(执行存储过程),INSERT,SELECT,UPDATE权限，@'%'表示从任意IP都可以访问到这个数据库
+    -> GRANT EXECUTE,INSERT,SELECT,UPDATE ON *.* TO 'yan2'@'%';
+Query OK, 0 rows affected
+
+mysql> SELECT * FROM USER WHERE USER='yan2';
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+| Host | User | Select_priv | Insert_priv | Update_priv | Delete_priv | Create_priv | Drop_priv | Reload_priv | Shutdown_priv | Process_priv | File_priv | Grant_priv | References_priv | Index_priv | Alter_priv | Show_db_priv | Super_priv | Create_tmp_table_priv | Lock_tables_priv | Execute_priv | Repl_slave_priv | Repl_client_priv | Create_view_priv | Show_view_priv | Create_routine_priv | Alter_routine_priv | Create_user_priv | Event_priv | Trigger_priv | Create_tablespace_priv | ssl_type | ssl_cipher | x509_issuer | x509_subject | max_questions | max_updates | max_connections | max_user_connections | plugin                | authentication_string                                                | password_expired | password_last_changed | password_lifetime | account_locked | Create_role_priv | Drop_role_priv | Password_reuse_history | Password_reuse_time |
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+| %    | yan2 | Y           | Y           | Y           | N           | N           | N         | N           | N             | N            | N         | N          | N               | N          | N          | N            | N          | N                     | N                | Y            | N               | N                | N                | N              | N                   | N                  | N                | N          | N            | N                      |          |            |             |              |             0 |           0 |               0 |                    0 | caching_sha2_password | $A$005$(u!rL4PWbXWw_,BbpLhGSRYoGceaeHQ4HmOtTpq3n9dVB1uVtExco0SEec3 | N                |   2018-07-26 10:40:28 | NULL              | N              | N                | N              | NULL                   | NULL                |
++------+------+-------------+-------------+-------------+-------------+-------------+-----------+-------------+---------------+--------------+-----------+------------+-----------------+------------+------------+--------------+------------+-----------------------+------------------+--------------+-----------------+------------------+------------------+----------------+---------------------+--------------------+------------------+------------+--------------+------------------------+----------+------------+-------------+--------------+---------------+-------------+-----------------+----------------------+-----------------------+----------------------------------------------------------------------+------------------+-----------------------+-------------------+----------------+------------------+----------------+------------------------+---------------------+
+1 row in set
+
+mysql> SHOW GRANTS FOR yan2;
++------------------------------------------------------------------+
+| Grants for yan2@%                                                |
++------------------------------------------------------------------+
+| GRANT SELECT, INSERT, UPDATE, EXECUTE ON *.* TO `yan2`@`%`       |
+| GRANT SELECT, INSERT, UPDATE, EXECUTE ON `mysql`.* TO `yan2`@`%` |
++------------------------------------------------------------------+
+2 rows in set
+
+mysql> #删除用户
+    -> DROP USER yan@'%';
+Query OK, 0 rows affected
+
+mysql> SELECT USER FROM USER;
++------------------+
+| USER             |
++------------------+
+| yan2             |
+| mysql.infoschema |
+| mysql.session    |
+| mysql.sys        |
+| root             |
++------------------+
+5 rows in set
+
+mysql> #收回某种权限
+    -> REVOKE EXECUTE ON *.* FROM 'yan2'@'%';
+Query OK, 0 rows affected
+
+mysql> SHOW GRANTS FOR yan2;
++------------------------------------------------------------------+
+| Grants for yan2@%                                                |
++------------------------------------------------------------------+
+| GRANT SELECT, INSERT, UPDATE ON *.* TO `yan2`@`%`                |
+| GRANT SELECT, INSERT, UPDATE, EXECUTE ON `mysql`.* TO `yan2`@`%` |
++------------------------------------------------------------------+
+2 rows in set
+
+mysql> #使用GRANT命令添加用户
+    -> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+    -> ON *.*
+    -> TO 'yan'@'%'
+    -> IDENTIFIED BY '123456';   #应该去掉这一行
+1064 - You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near 'IDENTIFIED BY '123456'' at line 7
+mysql> GRANT SELECT,INSERT,UPDATE,DELETE,CREATE,DROP
+    -> ON *.*
+    -> TO 'yan'@'%';   
+1410 - You are not allowed to create a user with GRANT
+
+mysql> #列出MySQL数据库管理系统的数据库列表
+    -> SHOW DATABASES;
++--------------------+
+| Database           |
++--------------------+
+| information_schema |
+| mysql              |
+| performance_schema |
+| sys                |
++--------------------+
+4 rows in set
+
+mysql> #显示指定数据库的所有表，首先需要use命令选择数据库
+    -> USE mysql;
+Query OK, 0 rows affected
+mysql> SHOW TABLES;
++---------------------------+
+| Tables_in_mysql           |
++---------------------------+
+| class2                    |
+| class3                    |
+| columns_priv              |
+| component                 |
+| db                        |
+| default_roles             |
+| engine_cost               |
+| func                      |
+| general_log               |
+| global_grants             |
+| gtid_executed             |
+| help_category             |
+| help_keyword              |
+| help_relation             |
+| help_topic                |
+| innodb_index_stats        |
+| innodb_table_stats        |
+| password_history          |
+| plugin                    |
+| procs_priv                |
+| proxies_priv              |
+| role_edges                |
+| server_cost               |
+| servers                   |
+| slave_master_info         |
+| slave_relay_log_info      |
+| slave_worker_info         |
+| slow_log                  |
+| tables_priv               |
+| time_zone                 |
+| time_zone_leap_second     |
+| time_zone_name            |
+| time_zone_transition      |
+| time_zone_transition_type |
+| user                      |
+| user_class                |
++---------------------------+
+36 rows in set
+
+mysql> #显示数据表的属性、属性类型、主键信息，是否为null、默认值等其他信息
+    -> SHOW COLUMNS FROM class2;
++---------+--------------+------+-----+---------+-------+
+| Field   | Type         | Null | Key | Default | Extra |
++---------+--------------+------+-----+---------+-------+
+| id      | int(11)      | NO   | PRI | NULL    |       |
+| name    | varchar(255) | NO   | MUL | NULL    |       |
+| address | varchar(255) | NO   |     | NULL    |       |
++---------+--------------+------+-----+---------+-------+
+3 rows in set
+
+mysql> #显示数据表的索引信息
+    -> SHOW INDEX FROM class3;
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| Table  | Non_unique | Key_name | Seq_in_index | Column_name | Collation | Cardinality | Sub_part | Packed | Null | Index_type | Comment | Index_comment | Visible |
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+| class3 |          0 | PRIMARY  |            1 | id          | A         |           0 | NULL     | NULL   |      | BTREE      |         |               | YES     |
+| class3 |          1 | name_age |            1 | name        | A         |           0 | NULL     | NULL   |      | BTREE      |         |               | YES     |
+| class3 |          1 | name_age |            2 | age         | A         |           0 | NULL     | NULL   |      | BTREE      |         |               | YES     |
++--------+------------+----------+--------------+-------------+-----------+-------------+----------+--------+------+------------+---------+---------------+---------+
+3 rows in set
+
+mysql> #输出MySQL数据库管理系统的性能及统计信息
+    -> SHOW TABLE STATUS FROM mysql;   #显示数据库中所有表的信息
++---------------------------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+---------------------------------------+-----------------------------------------+
+| Name                      | Engine | Version | Row_format | Rows | Avg_row_length | Data_length | Max_data_length | Index_length | Data_free | Auto_increment | Create_time         | Update_time         | Check_time | Collation          | Checksum | Create_options                        | Comment                                 |
++---------------------------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+---------------------------------------+-----------------------------------------+
+| class2                    | InnoDB |      10 | Dynamic    |    4 |           4096 |       16384 |               0 |            0 |         0 | NULL           | 2018-07-26 20:13:45 | 2018-07-26 20:03:02 | NULL       | utf8mb4_0900_ai_ci | NULL     |                                       |                                         |
+| class3                    | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |        16384 |         0 | NULL           | 2018-07-31 19:52:31 | NULL                | NULL       | utf8mb4_0900_ai_ci | NULL     |                                       |                                         |
+| columns_priv              | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Column privileges                       |
+| component                 | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 |              1 | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     |                                       | Components                              |
+| db                        | InnoDB |      10 | Dynamic    |    3 |           5461 |       16384 |               0 |        16384 |   4194304 | NULL           | 2018-07-24 17:45:39 | 2018-07-26 11:31:00 | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Database privileges                     |
+| default_roles             | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Default roles                           |
+| engine_cost               | InnoDB |      10 | Dynamic    |    2 |           8192 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    |                                         |
+| func                      | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | User defined functions                  |
+| general_log               | CSV    |      10 | Dynamic    |    2 |              0 |           0 |               0 |            0 |         0 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     |                                       | General log                             |
+| global_grants             | InnoDB |      10 | Dynamic    |   13 |           1260 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Extended global grants                  |
+| gtid_executed             | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8mb4_0900_ai_ci | NULL     |                                       |                                         |
+| help_category             | InnoDB |      10 | Dynamic    |   40 |            409 |       16384 |               0 |        16384 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | help categories                         |
+| help_keyword              | InnoDB |      10 | Dynamic    |  506 |            194 |       98304 |               0 |        81920 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | help keywords                           |
+| help_relation             | InnoDB |      10 | Dynamic    | 1412 |             58 |       81920 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | keyword-topic relation                  |
+| help_topic                | InnoDB |      10 | Dynamic    |  690 |           2303 |     1589248 |               0 |        81920 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | help topics                             |
+| innodb_index_stats        | InnoDB |      10 | Dynamic    |   18 |            910 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 09:45:33 | 2018-07-26 20:13:45 | NULL       | utf8_bin           | NULL     | row_format=DYNAMIC stats_persistent=0 |                                         |
+| innodb_table_stats        | InnoDB |      10 | Dynamic    |    4 |           4096 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 09:45:33 | 2018-07-26 20:13:45 | NULL       | utf8_bin           | NULL     | row_format=DYNAMIC stats_persistent=0 |                                         |
+| password_history          | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Password history for user accounts      |
+| plugin                    | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | MySQL plugins                           |
+| procs_priv                | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |        16384 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Procedure privileges                    |
+| proxies_priv              | InnoDB |      10 | Dynamic    |    1 |          16384 |       16384 |               0 |        16384 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | User proxy privileges                   |
+| role_edges                | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Role hierarchy and role grants          |
+| server_cost               | InnoDB |      10 | Dynamic    |    6 |           2730 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    |                                         |
+| servers                   | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | MySQL Foreign Servers table             |
+| slave_master_info         | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Master Information                      |
+| slave_relay_log_info      | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Relay Log Information                   |
+| slave_worker_info         | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Worker Information                      |
+| slow_log                  | CSV    |      10 | Dynamic    |    2 |              0 |           0 |               0 |            0 |         0 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     |                                       | Slow log                                |
+| tables_priv               | InnoDB |      10 | Dynamic    |    2 |           8192 |       16384 |               0 |        16384 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Table privileges                        |
+| time_zone                 | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 |              1 | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Time zones                              |
+| time_zone_leap_second     | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Leap seconds information for time zones |
+| time_zone_name            | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Time zone names                         |
+| time_zone_transition      | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Time zone transitions                   |
+| time_zone_transition_type | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | NULL                | NULL       | utf8_general_ci    | NULL     | stats_persistent=0                    | Time zone transition types              |
+| user                      | InnoDB |      10 | Dynamic    |    5 |           3276 |       16384 |               0 |            0 |   4194304 | NULL           | 2018-07-24 17:45:39 | 2018-07-26 11:56:45 | NULL       | utf8_bin           | NULL     | stats_persistent=0                    | Users and global privileges             |
+| user_class                | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |        16384 |         0 | NULL           | 2018-07-31 21:10:05 | NULL                | NULL       | utf8mb4_0900_ai_ci | NULL     |                                       |                                         |
++---------------------------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+---------------------------------------+-----------------------------------------+
+36 rows in set
+
+    -> SHOW TABLE STATUS FROM mysql LIKE 'class%';   #表名以class开头的表的信息
++--------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+----------------+---------+
+| Name   | Engine | Version | Row_format | Rows | Avg_row_length | Data_length | Max_data_length | Index_length | Data_free | Auto_increment | Create_time         | Update_time         | Check_time | Collation          | Checksum | Create_options | Comment |
++--------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+----------------+---------+
+| class2 | InnoDB |      10 | Dynamic    |    4 |           4096 |       16384 |               0 |            0 |         0 | NULL           | 2018-07-26 20:13:45 | 2018-07-26 20:03:02 | NULL       | utf8mb4_0900_ai_ci | NULL     |                |         |
+| class3 | InnoDB |      10 | Dynamic    |    0 |              0 |       16384 |               0 |        16384 |         0 | NULL           | 2018-07-31 19:52:31 | NULL                | NULL       | utf8mb4_0900_ai_ci | NULL     |                |         |
++--------+--------+---------+------------+------+----------------+-------------+-----------------+--------------+-----------+----------------+---------------------+---------------------+------------+--------------------+----------+----------------+---------+
+2 rows in set
+
+
+
+	
