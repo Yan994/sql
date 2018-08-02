@@ -1,3 +1,5 @@
+http://www.yesky.com/imagesnew/software/mysql/manual_Tutorial.html
+
 #第一个例子
 
 CREATE TABLE 
@@ -127,6 +129,7 @@ GROUP BY
 
 #拥有某个字段的组间最大值的行
 #“对每篇文章，找出有最贵价格的交易者。”
+#不能直接select article,dealer,max(price) as price from shop group by article;会报错，group by的article不能单一对应到dealer字段。
 #方法一：先得到每篇文章的最贵价格（建成一个临时表），再找出对应交易者
 
 CREATE TEMPORARY TABLE
@@ -175,7 +178,7 @@ UNLOCK TABLES;
 
 DROP TABLE tmp;
 
-#方法二：单个查询，相当低效
+#方法二：单个查询，相当低效，将dealer与price字段绑定，则一一对应
 
 SELECT
   article,
@@ -198,6 +201,90 @@ GROUP BY
 5 rows in set
 */
 
+
+#修改某一列的记录
+UPDATE
+  shop
+SET
+  price=1.32
+WHERE
+  article=0;
+
+SELECT
+  *
+FROM
+  shop
+WHERE
+  article=0;
+/*
++---------+--------+-------+
+| article | dealer | price |
++---------+--------+-------+
+|       0 | F      |  1.32 |
++---------+--------+-------+
+1 row in set
+*/
+
+#保证输出结果唯一性
+SELECT DISTINCT
+  article
+FROM
+  shop;
+/*
++---------+
+| article |
++---------+
+|       0 |
+|       1 |
+|       2 |
+|       3 |
+|       4 |
++---------+
+5 rows in set
+*/
+
+#or条件
+SELECT
+  *
+FROM
+  shop
+WHERE
+  dealer='A' OR dealer='B';
+/*
++---------+--------+-------+
+| article | dealer | price |
++---------+--------+-------+
+|       1 | A      |  3.45 |
+|       1 | B      |  3.99 |
+|       2 | A      | 10.99 |
+|       3 | B      |  1.45 |
++---------+--------+-------+
+4 rows in set
+*/
+
+#按照两个字段进行排序
+SELECT
+  *
+FROM
+  shop
+ORDER BY
+  price,article  DESC;
+/*
++---------+--------+-------+
+| article | dealer | price |
++---------+--------+-------+
+|       3 | D      |  1.25 |
+|       0 | F      |  1.32 |
+|       3 | B      |  1.45 |
+|       3 | C      |  1.69 |
+|       1 | A      |  3.45 |
+|       1 | B      |  3.99 |
+|       2 | A      | 10.99 |
+|       4 | D      | 19.95 |
++---------+--------+-------+
+8 rows in set
+*/
+#注：desc关键词仅适用于紧跟在它之前的列名字，其余的仍然以升序排列
 
 
 
@@ -303,3 +390,127 @@ AND
 
 
 
+#第三个例子
+
+#创建数据库
+CREATE DATABASE
+  test;
+USE test
+
+CREATE TABLE
+  pet(
+  name VARCHAR(20),
+  owner VARCHAR(20),
+  species VARCHAR(20),
+  sex CHAR(1),
+  birth DATE,
+  death DATE);
+/*
+[Err] 1055 - Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 'information_schema.PROFILING.SEQ' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
+*/
+
+SHOW TABLES;
+/*
++----------------+
+| Tables_in_test |
++----------------+
+| pet            |
++----------------+
+1 row in set
+*/
+
+#查看表信息
+DESCRIBE pet;
+/*
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| name    | varchar(20) | YES  |     | NULL    |       |
+| owner   | varchar(20) | YES  |     | NULL    |       |
+| species | varchar(20) | YES  |     | NULL    |       |
+| sex     | char(1)     | YES  |     | NULL    |       |
+| birth   | date        | YES  |     | NULL    |       |
+| death   | date        | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+6 rows in set
+*/
+
+#从文本文件导入数据
+LOAD DATA LOCAL INFILE
+  "pet.txt"
+INTO 
+  TABLE pet;
+
+
+
+
+
+#关于日期的一些计算
+
+#从日期计算天数
+SELECT
+  TO_DAYS(NOW())-TO_DAYS('1994-10-10');
+/*
++--------------------------------------+
+| TO_DAYS(NOW())-TO_DAYS('1994-10-10') |
++--------------------------------------+
+|                                 8697 |
++--------------------------------------+
+1 row in set
+*/
+
+#显示日期中的年或月或日
+SELECT
+  YEAR('1994-10-10'),MONTH('1994-10-10'),DAY('1994-10-10');
+/*
++--------------------+---------------------+-------------------+
+| YEAR('1994-10-10') | MONTH('1994-10-10') | DAY('1994-10-10') |
++--------------------+---------------------+-------------------+
+|               1994 |                  10 |                10 |
++--------------------+---------------------+-------------------+
+1 row in set
+*/
+#可以把这三个方程放在where之后
+
+#遇到12月份，下一个月应为1月份
+SELECT
+  MONTH(DATE_ADD('2018-12-11', INTERVAL 1 MONTH));
+/*
++-------------------------------------------------+
+| MONTH(DATE_ADD('2018-12-11', INTERVAL 1 MONTH)) |
++-------------------------------------------------+
+|                                               1 |
++-------------------------------------------------+
+1 row in set
+*/
+#第二种方法
+SELECT
+  MOD(MONTH('2018-12-11'),12)+1;
+#`MOD`(N,12)返回在0-11之间的一个数字，如果当前是12月，则绕回月份到值0，因此最后要加1
+
+
+
+
+#NULL值的操作
+#不能被比较
+SELECT
+  1=NULL, 1!=NULL, 1<NULL, 1>NULL;
+/*
++--------+---------+--------+--------+
+| 1=NULL | 1!=NULL | 1<NULL | 1>NULL |
++--------+---------+--------+--------+
+| NULL   | NULL    | NULL   | NULL   |
++--------+---------+--------+--------+
+1 row in set
+*/
+
+SELECT
+  1 IS NULL, 1 IS NOT NULL;
+/*
++-----------+---------------+
+| 1 IS NULL | 1 IS NOT NULL |
++-----------+---------------+
+|         0 |             1 |
++-----------+---------------+
+1 row in set
+*/
