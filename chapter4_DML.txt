@@ -1,0 +1,226 @@
+USE test;
+DROP TABLE IF EXISTS ShohinIns;
+
+CREATE TABLE
+  ShohinIns(
+  shohin_id    CHAR(4)    NOT NULL,
+  shohin_mei   VARCHAR(100) NOT NULL,
+  shohin_bunrui  VARCHAR(32) NOT NULL,
+  hanbai_tanka   INTEGER  DEFAULT 0,
+  shiire_tanka   INTEGER  ,
+  torokubi      DATE ,
+  PRIMARY KEY (shohin_id));
+
+INSERT INTO 
+  ShohinIns
+VALUES
+  ('0001','T恤衫','衣服',1000,500,'2009-09-20'),
+  ('0002','打孔器','办公用品',500,320,'2009-09-11'),
+  ('0003','运动T恤','衣服',4000,2800,NULL),
+  ('0004','菜刀','厨房用具',3000,2800,'2009-09-20'),
+  ('0005','高压锅','厨房用具',6800,5000,'2009-01-15');
+
+#插入null值
+INSERT INTO
+  ShohinIns
+VALUES
+  ('0006','叉子','厨房用具',500,NULL,'2009-09-20');
+
+#插入默认值
+INSERT INTO 
+  ShohinIns
+  (shohin_id,shohin_mei,shohin_bunrui,hanbai_tanka,shiire_tanka,torokubi)
+VALUES
+  (  '0007',  '擦菜板',   '厨房用具',   DEFAULT,      790,    '2009-04-28');
+
+#省略某未设定默认值的列，该列会被赋予null
+INSERT INTO
+  ShohinIns
+  (shohin_id,shohin_mei,shohin_bunrui,hanbai_tanka,torokubi)
+VALUES
+  ( '0008',   '圆珠笔',   '办公用品',    100,    '2009-11-11');
+SELECT
+  *
+FROM
+  ShohinIns
+WHERE
+  shohin_id = '0008';
+/*
++-----------+------------+---------------+--------------+--------------+------------+
+| shohin_id | shohin_mei | shohin_bunrui | hanbai_tanka | shiire_tanka | torokubi   |
++-----------+------------+---------------+--------------+--------------+------------+
+| 0008      | 圆珠笔     | 办公用品      |          100 | NULL         | 2009-11-11 |
++-----------+------------+---------------+--------------+--------------+------------+
+1 row in set
+*/
+
+#从其他表中复制数据
+CREATE TABLE
+  ShohinCopy(
+  shohin_id    CHAR(4)    NOT NULL,
+  shohin_mei   VARCHAR(100) NOT NULL,
+  shohin_bunrui  VARCHAR(32) NOT NULL,
+  hanbai_tanka   INTEGER  ,
+  shiire_tanka   INTEGER  ,
+  torokubi      DATE ,
+  PRIMARY KEY (shohin_id));
+
+INSERT INTO
+  ShohinCopy
+  (shohin_id, shohin_mei, shohin_bunrui, hanbai_tanka, shiire_tanka, torokubi)
+SELECT
+  shohin_id, shohin_mei, shohin_bunrui, hanbai_tanka, shiire_tanka, torokubi
+FROM
+  Shohin;
+
+#select中可以包含where、group by子句
+CREATE TABLE
+  ShohinBunrui(
+  shohin_bunrui  VARCHAR(32)  NOT NULL,
+  sum_hanbai_tanka  INTEGER,
+  sum_shiire_tanka  INTEGER,
+  PRIMARY KEY (shohin_bunrui));
+
+INSERT INTO
+  ShohinBunrui
+  (shohin_bunrui, sum_hanbai_tanka, sum_shiire_tanka)
+SELECT
+  shohin_bunrui, SUM(hanbai_tanka), SUM(shiire_tanka)
+FROM
+  Shohin 
+GROUP BY
+  shohin_bunrui;
+SELECT
+  *
+FROM
+  ShohinBunrui;
+/*
++---------------+------------------+------------------+
+| shohin_bunrui | sum_hanbai_tanka | sum_shiire_tanka |
++---------------+------------------+------------------+
+| 办公用品      |              600 |              320 |
+| 厨房用具      |            11180 |             8590 |
+| 衣服          |             5000 |             3300 |
++---------------+------------------+------------------+
+3 rows in set
+*/
+
+#删除数据，以行为单位，可以where定位：delete from 
+DELETE FROM
+  Shohin
+WHERE
+  hanbai_tanka >=4000;
+
+#删除数据，删除全部：truncate 
+
+#将登记日期全部更新为‘2009-10-10’
+UPDATE 
+  Shohin
+SET
+  torokubi = '2009-10-10';
+SELECT
+  *
+FROM
+  Shohin;
+/*
++-----------+------------+---------------+--------------+--------------+------------+
+| shohin_id | shohin_mei | shohin_bunrui | hanbai_tanka | shiire_tanka | torokubi   |
++-----------+------------+---------------+--------------+--------------+------------+
+| 0001      | T恤衫      | 衣服          |         1000 |          500 | 2009-10-10 |
+| 0002      | 打孔器     | 办公用品      |          500 |          320 | 2009-10-10 |
+| 0004      | 菜刀       | 厨房用具      |         3000 |         2800 | 2009-10-10 |
+| 0006      | 叉子       | 厨房用具      |          500 | NULL         | 2009-10-10 |
+| 0007      | 擦菜板     | 厨房用具      |          880 |          790 | 2009-10-10 |
+| 0008      | 圆珠笔     | 办公用品      |          100 | NULL         | 2009-10-10 |
++-----------+------------+---------------+--------------+--------------+------------+
+6 rows in set
+*/
+
+#更新单列特定行
+UPDATE
+  Shohin 
+SET
+  hanbai_tanka = hanbai_tanka * 10
+WHERE
+  shohin_bunrui = '厨房用具';
+SELECT
+  *
+FROM
+  Shohin;
+/*
++-----------+------------+---------------+--------------+--------------+------------+
+| shohin_id | shohin_mei | shohin_bunrui | hanbai_tanka | shiire_tanka | torokubi   |
++-----------+------------+---------------+--------------+--------------+------------+
+| 0001      | T恤衫      | 衣服          |         1000 |          500 | 2009-10-10 |
+| 0002      | 打孔器     | 办公用品      |          500 |          320 | 2009-10-10 |
+| 0004      | 菜刀       | 厨房用具      |        30000 |         2800 | 2009-10-10 |
+| 0006      | 叉子       | 厨房用具      |         5000 | NULL         | 2009-10-10 |
+| 0007      | 擦菜板     | 厨房用具      |         8800 |          790 | 2009-10-10 |
+| 0008      | 圆珠笔     | 办公用品      |          100 | NULL         | 2009-10-10 |
++-----------+------------+---------------+--------------+--------------+------------+
+6 rows in set
+*/
+
+UPDATE
+  Shohin 
+SET
+  torokubi = NULL   #将值清空为null
+WHERE
+  shohin_id = '0008';
+
+#更新多列
+UPDATE
+  Shohin 
+SET
+  hanbai_tanka = hanbai_tanka * 10,
+  shiire_tanka = shiire_tanka / 2
+WHERE
+  shohin_bunrui = '厨房用具';
+
+#事务：需要在同一个处理单元中执行的一系列（同时）更新处理的集合。
+#每条语句单独运行，但是在commit之前，数据表中的数据是不会改变的。
+START TRANSACTION;
+  -- 将运动T恤的销售单价降低1000日元
+  UPDATE
+    Shohin 
+  SET
+    hanbai_tanka = hanbai_tanka - 1000
+  WHERE
+    shohin_mei = '运动T恤';
+  -- 将T恤的销售单价上浮1000日元
+  UPDATE
+    Shohin 
+  SET
+    hanbai_tanka = hanbai_tanka + 1000
+  WHERE
+    shohin_mei = 'T恤衫';
+COMMIT;
+
+#取消处理：rollback
+#会回复到事务开始之前的状态。rollback之后，相当于之前开始的所有语句都没有执行过。
+
+START TRANSACTION;
+  -- 将运动T恤的销售单价降低1000日元
+  UPDATE
+    Shohin 
+  SET
+    hanbai_tanka = hanbai_tanka - 1000
+  WHERE
+    shohin_mei = '运动T恤';
+  -- 将T恤的销售单价上浮1000日元
+  UPDATE
+    Shohin 
+  SET
+    hanbai_tanka = hanbai_tanka + 1000
+  WHERE
+    shohin_mei = 'T恤衫';
+ROLLBACK;
+
+#事务的ACID特性
+/*
+原子性（Atomicity）：在事务结束时，其中所包含的更新处理要么全部执行，要么全部不执行。
+一致性（Consistency）：事务中的处理要满足数据库提前设置的约束，不合约束的SQL会被回滚，不被执行。
+隔离性（Isolation）：保证不同事务之间互不干扰的特性，只有在事务提交之后，其他事务才会看到执行结果。
+持久性（Durability）：事务一旦结束，即使因为系统故障导致数据丢失，数据库也能通过某种手段进行恢复。
+*/
+
