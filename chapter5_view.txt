@@ -1,0 +1,161 @@
+#视图保存的是select语句，从视图中读取数据时，视图会在内部执行该select语句并创建出一张临时表。
+#经常使用的select语句应该做成视图
+#虽然可以，但应该避免在视图的基础上创建视图
+#定义视图时不可以使用order by子句
+/*
+当满足以下条件时，视图可以被insert、update等更新，原表也会被更新
+1.select子句中未使用distinct
+2.from子句中只有一张表
+3.未使用group by子句
+4.未使用having子句
+5.所添加记录符合原表字段约束
+*/
+
+USE test;
+DELETE FROM
+  Shohin;
+INSERT INTO 
+  Shohin
+VALUES
+  ('0001','T恤衫','衣服',1000,500,'2009-09-20'),
+  ('0002','打孔器','办公用品',500,320,'2009-09-11'),
+  ('0003','运动T恤','衣服',4000,2800,NULL),
+  ('0004','菜刀','厨房用具',3000,2800,'2009-09-20'),
+  ('0005','高压锅','厨房用具',6800,5000,'2009-01-15'),
+  ('0006','叉子','厨房用具',500,NULL,'2009-09-20'),
+  ('0007','擦菜板','厨房用具',880,790,'2008-04-28'),
+  ('0008','圆珠笔','办公用品',100,NULL,'2009-11-11');
+
+#创建视图
+CREATE VIEW
+  ShohinSum
+  (shohin_bunrui, cnt_shohin)  #视图的列名
+AS
+  SELECT
+    shohin_bunrui, COUNT(*)
+  FROM 
+    Shohin
+  GROUP BY
+    shohin_bunrui;
+
+#使用视图
+SELECT
+  shohin_bunrui, cnt_shohin
+FROM
+  ShohinSum;
+/*
++---------------+------------+
+| shohin_bunrui | cnt_shohin |
++---------------+------------+
+| 衣服          |          2 |
+| 办公用品      |          2 |
+| 厨房用具      |          4 |
++---------------+------------+
+3 rows in set
+*/
+
+#删除视图
+DROP VIEW
+  ShohinSum;
+
+#子查询：一次性的视图，在select语句执行完毕之后就会消失。
+#直接在from子句中使用定义视图的select语句，即多层嵌套，但尽量避免
+SELECT 
+  shohin_bunrui, cnt_shohin
+FROM (
+  SELECT
+    shohin_bunrui, COUNT(*) AS cnt_shohin
+  FROM
+    Shohin 
+  GROUP BY
+    shohin_bunrui)
+AS
+  ShohinSum;
+/*
++---------------+------------+
+| shohin_bunrui | cnt_shohin |
++---------------+------------+
+| 衣服          |          2 |
+| 办公用品      |          2 |
+| 厨房用具      |          4 |
++---------------+------------+
+3 rows in set
+*/
+
+#标量子查询就是返回单一值的子查询（因此可以用在=或者<>这样需要单一值的比较运算符之中）
+#可以用在任何位置，但是子查询返回的必须是单一值
+#在where子句中使用标量子查询
+SELECT
+  shohin_id, shohin_mei, hanbai_tanka
+FROM
+  Shohin 
+WHERE
+  hanbai_tanka > (SELECT
+                    AVG(hanbai_tanka) 
+                  FROM
+                    Shohin);
+/*
++-----------+------------+--------------+
+| shohin_id | shohin_mei | hanbai_tanka |
++-----------+------------+--------------+
+| 0003      | 运动T恤    |         4000 |
+| 0004      | 菜刀       |         3000 |
+| 0005      | 高压锅     |         6800 |
++-----------+------------+--------------+
+3 rows in set
+*/
+
+#关联子查询，在细分的组内进行比较时使用
+#在对商品进行分组之后，选出组内销售单价大于该组平均值（即分母为组内商品个数）的商品
+SELECT 
+  shohin_id, shohin_mei, hanbai_tanka
+FROM
+  Shohin AS s1
+WHERE
+  hanbai_tanka > (SELECT
+                    AVG(hanbai_tanka)
+                  FROM
+                    Shohin AS s2
+                  WHERE
+                    s1.shohin_bunrui = s2.shohin_bunrui
+                  GROUP BY
+                    shohin_bunrui);
+/*
++-----------+------------+--------------+
+| shohin_id | shohin_mei | hanbai_tanka |
++-----------+------------+--------------+
+| 0002      | 打孔器     |          500 |
+| 0003      | 运动T恤    |         4000 |
+| 0004      | 菜刀       |         3000 |
+| 0005      | 高压锅     |         6800 |
++-----------+------------+--------------+
+4 rows in set
+*/
+
+#练习
+
+#5.1创建视图
+CREATE VIEW
+  ViewRenshu5_1
+AS
+  SELECT
+    shohin_mei, hanbai_tanka, torokubi
+  FROM
+    Shohin 
+  WHERE
+    hanbai_tanka >= 1000
+  AND
+    torokubi = '2009-09-20';
+SELECT
+  *
+FROM
+  ViewRenshu5_1;
+/*
++------------+--------------+------------+
+| shohin_mei | hanbai_tanka | torokubi   |
++------------+--------------+------------+
+| T恤衫      |         1000 | 2009-09-20 |
+| 菜刀       |         3000 | 2009-09-20 |
++------------+--------------+------------+
+2 rows in set
+*/
