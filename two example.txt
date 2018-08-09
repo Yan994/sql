@@ -428,31 +428,98 @@ AND
 #创建数据库
 CREATE DATABASE
   test;
-USE test
-
+  
+USE test;
+DROP TABLE IF EXISTS pet;
 CREATE TABLE
   pet(
   name VARCHAR(20),
   owner VARCHAR(20),
   species VARCHAR(20),
   sex CHAR(1),
-  birth DATE,
-  death DATE);
-/*
-[Err] 1055 - Expression #1 of ORDER BY clause is not in GROUP BY clause and contains nonaggregated column 'information_schema.PROFILING.SEQ' which is not functionally dependent on columns in GROUP BY clause; this is incompatible with sql_mode=only_full_group_by
-*/
-
+  birth VARCHAR(20),
+  death VARCHAR(20));
 SHOW TABLES;
 /*
 +----------------+
 | Tables_in_test |
 +----------------+
+| chars          |
+| name           |
 | pet            |
+| samplelike     |
+| samplemath     |
+| samplestr      |
+| shohin         |
+| shohinbunrui   |
+| shohincopy     |
+| shohinins      |
+| tenposhohin    |
+| viewrenshu5_1  |
 +----------------+
-1 row in set
+12 rows in set
 */
 
 #查看表信息
+DESCRIBE pet;
+/*
++---------+-------------+------+-----+---------+-------+
+| Field   | Type        | Null | Key | Default | Extra |
++---------+-------------+------+-----+---------+-------+
+| name    | varchar(20) | YES  |     | NULL    |       |
+| owner   | varchar(20) | YES  |     | NULL    |       |
+| species | varchar(20) | YES  |     | NULL    |       |
+| sex     | char(1)     | YES  |     | NULL    |       |
+| birth   | varchar(20) | YES  |     | NULL    |       |
+| death   | varchar(20) | YES  |     | NULL    |       |
++---------+-------------+------+-----+---------+-------+
+6 rows in set
+*/
+DELETE FROM
+  pet;
+
+#从文本文件导入数据
+#先设置为文本类型，导入数据后，将字段类型改回日期型
+LOAD DATA INFILE
+  'C:/Users/Administrator/Documents/GitHub/sql/pet.txt'
+INTO TABLE
+  pet
+FIELDS TERMINATED by
+  '	'  -- 字段间隔是tab键
+LINES TERMINATED by
+  '\r\n'  -- 行与行之间的区分
+IGNORE 1 LINES;
+
+SELECT
+  *
+FROM
+  pet;
+/*
++----------+--------+---------+------+------------+------------+
+| name     | owner  | species | sex  | birth      | death      |
++----------+--------+---------+------+------------+------------+
+| Fluffy   | Harold | cat     | f    | 1993-02-04 | NULL       |
+| Claws    | Gwen   | cat     | m    | 1994-03-17 | NULL       |
+| Buffy    | Harold | dog     | f    | 1989-05-13 | NULL       |
+| Fang     | Benny  | dog     | m    | 1990-08-27 | NULL       |
+| Bowser   | Diane  | dog     | m    | 1998-08-31 | 1995-07-29 |
+| Chirpy   | Gwen   | bird    | f    | 1998-09-11 | NULL       |
+| Whistler | Gwen   | bird    | NULL | 1997-12-09 | NULL       |
+| Slim     | Benny  | snake   | m    | 1996-04-29 | NULL       |
++----------+--------+---------+------+------------+------------+
+8 rows in set
+*/
+
+#更改字段类型
+ALTER TABLE
+  pet 
+MODIFY COLUMN
+  birth DATE;
+ALTER TABLE
+  pet 
+MODIFY COLUMN
+  death DATE;
+
 DESCRIBE pet;
 /*
 +---------+-------------+------+-----+---------+-------+
@@ -467,13 +534,25 @@ DESCRIBE pet;
 +---------+-------------+------+-----+---------+-------+
 6 rows in set
 */
-
-#从文本文件导入数据
-LOAD DATA LOCAL INFILE
-  "pet.txt"
-INTO 
-  TABLE pet;
-
+SELECT
+  *
+FROM
+  pet;
+/*
++----------+--------+---------+------+------------+------------+
+| name     | owner  | species | sex  | birth      | death      |
++----------+--------+---------+------+------------+------------+
+| Fluffy   | Harold | cat     | f    | 1993-02-04 | NULL       |
+| Claws    | Gwen   | cat     | m    | 1994-03-17 | NULL       |
+| Buffy    | Harold | dog     | f    | 1989-05-13 | NULL       |
+| Fang     | Benny  | dog     | m    | 1990-08-27 | NULL       |
+| Bowser   | Diane  | dog     | m    | 1998-08-31 | 1995-07-29 |
+| Chirpy   | Gwen   | bird    | f    | 1998-09-11 | NULL       |
+| Whistler | Gwen   | bird    | NULL | 1997-12-09 | NULL       |
+| Slim     | Benny  | snake   | m    | 1996-04-29 | NULL       |
++----------+--------+---------+------+------------+------------+
+8 rows in set
+*/
 
 
 
