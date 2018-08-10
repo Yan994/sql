@@ -1,0 +1,256 @@
+USE test;
+
+#表的加减法
+
+DROP TABLE IF EXISTS
+  Shohin2;
+CREATE TABLE
+  Shohin2
+  (shohin_id  CHAR(4)  NOT NULL,
+   shohin_mei VARCHAR(100) NOT NULL,
+   shohin_bunrui VARCHAR(32) NOT NULL,
+   hanbai_tanka  INTEGER  ,
+   shiire_tanka  INTEGER  ,
+   torokubi  DATE  ,
+   PRIMARY KEY (shohin_id));
+INSERT INTO
+  Shohin2
+VALUES
+  ('0001','T恤衫','衣服',1000,500,'2008-09-20'),
+  ('0002','打孔器','办公用品',500,320,'2009-09-11'),
+  ('0003','运动T恤','衣服',4000,2800,NULL),
+  ('0009','手套','衣服',800,500,NULL),
+  ('0010','水壶','厨房用具',2000,1700,'2009-09-20');
+
+#表的加法（所取出的列的所有行(删除重复行)的并集）
+#注意，所取出的列数必须相同，类型也必须一致。不同表选取出的相同位置的列会合并为前表该位置的列
+SELECT
+  shohin_id, shohin_mei
+FROM
+  Shohin
+UNION SELECT
+        shohin_id, shohin_mei
+      FROM
+        Shohin2;
+/*
++-----------+------------+
+| shohin_id | shohin_mei |
++-----------+------------+
+| 0001      | T恤衫      |
+| 0002      | 打孔器     |
+| 0003      | 运动T恤    |
+| 0004      | 菜刀       |
+| 0005      | 高压锅     |
+| 0006      | 叉子       |
+| 0007      | 擦菜板     |
+| 0008      | 圆珠笔     |
+| 0009      | 手套       |
+| 0010      | 水壶       |
++-----------+------------+
+10 rows in set
+*/
+#添加条件（注意，order by只能添加在最后）
+SELECT
+  shohin_id, shohin_mei
+FROM
+  Shohin 
+ WHERE
+  shohin_bunrui='厨房用具'
+UNION SELECT
+        shohin_id, shohin_mei
+      FROM
+        Shohin2
+       WHERE 
+         shohin_bunrui='厨房用具'
+ORDER BY
+  shohin_id; 
+/*
++-----------+------------+
+| shohin_id | shohin_mei |
++-----------+------------+
+| 0004      | 菜刀       |
+| 0005      | 高压锅     |
+| 0006      | 叉子       |
+| 0007      | 擦菜板     |
+| 0010      | 水壶       |
++-----------+------------+
+5 rows in set
+*/
+
+#表的加法（所取出的列的所有行(保留重复行)的并集）
+SELECT
+  shohin_id, shohin_mei
+FROM
+  Shohin 
+UNION ALL SELECT
+            shohin_id, shohin_mei
+          FROM 
+            Shohin2;
+/*
++-----------+------------+
+| shohin_id | shohin_mei |
++-----------+------------+
+| 0001      | T恤衫      |
+| 0002      | 打孔器     |
+| 0003      | 运动T恤    |
+| 0004      | 菜刀       |
+| 0005      | 高压锅     |
+| 0006      | 叉子       |
+| 0007      | 擦菜板     |
+| 0008      | 圆珠笔     |
+| 0001      | T恤衫      |
+| 0002      | 打孔器     |
+| 0003      | 运动T恤    |
+| 0009      | 手套       |
+| 0010      | 水壶       |
++-----------+------------+
+13 rows in set
+*/
+
+
+#修改下列名
+ALTER TABLE
+  TenpoShohin
+RENAME COLUMN 
+  tenpomei TO tenpo_mei;
+
+#联结（以列为单位对表进行联结）
+
+#内联结inner join
+SELECT
+  TS.tenpo_id, TS.tenpo_mei, TS.shohin_id, S.shohin_mei, S.hanbai_tanka
+FROM
+   TenpoShohin AS TS
+ INNER JOIN
+   Shohin AS S
+ ON
+   TS.shohin_id = S.shohin_id;
+/*
++----------+-----------+-----------+------------+--------------+
+| tenpo_id | tenpo_mei | shohin_id | shohin_mei | hanbai_tanka |
++----------+-----------+-----------+------------+--------------+
+| 000A     | 东京      | 0001      | T恤衫      |         1000 |
+| 000A     | 东京      | 0002      | 打孔器     |          500 |
+| 000A     | 东京      | 0003      | 运动T恤    |         4000 |
+| 000B     | 名古屋    | 0002      | 打孔器     |          500 |
+| 000B     | 名古屋    | 0003      | 运动T恤    |         4000 |
+| 000B     | 名古屋    | 0004      | 菜刀       |         3000 |
+| 000B     | 名古屋    | 0006      | 叉子       |          500 |
+| 000B     | 名古屋    | 0007      | 擦菜板     |          880 |
+| 000C     | 大阪      | 0003      | 运动T恤    |         4000 |
+| 000C     | 大阪      | 0004      | 菜刀       |         3000 |
+| 000C     | 大阪      | 0006      | 叉子       |          500 |
+| 000C     | 大阪      | 0007      | 擦菜板     |          880 |
+| 000D     | 福冈      | 0001      | T恤衫      |         1000 |
++----------+-----------+-----------+------------+--------------+
+13 rows in set
+*/
+#内联结结合where子句
+SELECT
+  TS.tenpo_id, TS.tenpo_mei, TS.shohin_id, S.shohin_mei, S.hanbai_tanka
+FROM
+   TenpoShohin AS TS
+ INNER JOIN
+   Shohin AS S
+ ON
+   TS.shohin_id = S.shohin_id
+WHERE
+  TS.tenpo_id = '000A';
+/*
++----------+-----------+-----------+------------+--------------+
+| tenpo_id | tenpo_mei | shohin_id | shohin_mei | hanbai_tanka |
++----------+-----------+-----------+------------+--------------+
+| 000A     | 东京      | 0001      | T恤衫      |         1000 |
+| 000A     | 东京      | 0002      | 打孔器     |          500 |
+| 000A     | 东京      | 0003      | 运动T恤    |         4000 |
++----------+-----------+-----------+------------+--------------+
+3 rows in set
+*/
+
+#外联结
+SELECT
+  TS.tenpo_id, TS.tenpo_mei, TS.shohin_id, S.shohin_mei, S.hanbai_tanka
+FROM
+   TenpoShohin AS TS
+ RIGHT OUTER JOIN -- 有left outer join
+   Shohin AS S
+ ON
+   TS.shohin_id = S.shohin_id;
+/*
++----------+-----------+-----------+------------+--------------+
+| tenpo_id | tenpo_mei | shohin_id | shohin_mei | hanbai_tanka |
++----------+-----------+-----------+------------+--------------+
+| 000A     | 东京      | 0001      | T恤衫      |         1000 |
+| 000A     | 东京      | 0002      | 打孔器     |          500 |
+| 000A     | 东京      | 0003      | 运动T恤    |         4000 |
+| 000B     | 名古屋    | 0002      | 打孔器     |          500 |
+| 000B     | 名古屋    | 0003      | 运动T恤    |         4000 |
+| 000B     | 名古屋    | 0004      | 菜刀       |         3000 |
+| 000B     | 名古屋    | 0006      | 叉子       |          500 |
+| 000B     | 名古屋    | 0007      | 擦菜板     |          880 |
+| 000C     | 大阪      | 0003      | 运动T恤    |         4000 |
+| 000C     | 大阪      | 0004      | 菜刀       |         3000 |
+| 000C     | 大阪      | 0006      | 叉子       |          500 |
+| 000C     | 大阪      | 0007      | 擦菜板     |          880 |
+| 000D     | 福冈      | 0001      | T恤衫      |         1000 |
+| NULL     | NULL      | NULL      | 高压锅     |         6800 |
+| NULL     | NULL      | NULL      | 圆珠笔     |          100 |
++----------+-----------+-----------+------------+--------------+
+15 rows in set
+*/
+/*
+联结多个表
+SELECT 
+  colunmns 
+FROM
+  a AS a
+ INNER JOIN
+   b AS b
+ ON
+   a.aa = b.aa
+  INNER JOIN
+    c AS c
+  ON
+    a.aa = c.aa
+WHERE
+  条件;
+*/
+
+#交叉联结cross join ，结果类似于笛卡尔乘积
+
+#练习
+#7.2
+SELECT
+  COALESCE(TS.tenpo_id, '不明') AS tenpo_id,
+  COALESCE(TS.tenpo_mei, '不明') AS tenpo_mei,
+  COALESCE(S.shohin_id, '不明') AS shohin_id,  -- 选的是S表的，所以不是空
+  COALESCE(S.shohin_mei, '不明') AS shohin_mei,
+  COALESCE(S.hanbai_tanka, '不明') AS hanbai_tanka
+FROM
+  TenpoShohin AS TS
+ RIGHT OUTER JOIN
+   Shohin AS S
+ ON
+   TS.shohin_id = S.shohin_id;
+/*
++----------+-----------+-----------+------------+--------------+
+| tenpo_id | tenpo_mei | shohin_id | shohin_mei | hanbai_tanka |
++----------+-----------+-----------+------------+--------------+
+| 000A     | 东京      | 0001      | T恤衫      | 1000         |
+| 000A     | 东京      | 0002      | 打孔器     | 500          |
+| 000A     | 东京      | 0003      | 运动T恤    | 4000         |
+| 000B     | 名古屋    | 0002      | 打孔器     | 500          |
+| 000B     | 名古屋    | 0003      | 运动T恤    | 4000         |
+| 000B     | 名古屋    | 0004      | 菜刀       | 3000         |
+| 000B     | 名古屋    | 0006      | 叉子       | 500          |
+| 000B     | 名古屋    | 0007      | 擦菜板     | 880          |
+| 000C     | 大阪      | 0003      | 运动T恤    | 4000         |
+| 000C     | 大阪      | 0004      | 菜刀       | 3000         |
+| 000C     | 大阪      | 0006      | 叉子       | 500          |
+| 000C     | 大阪      | 0007      | 擦菜板     | 880          |
+| 000D     | 福冈      | 0001      | T恤衫      | 1000         |
+| 不明     | 不明      | 0005      | 高压锅     | 6800         |
+| 不明     | 不明      | 0008      | 圆珠笔     | 100          |
++----------+-----------+-----------+------------+--------------+
+15 rows in set
+*/
