@@ -1,0 +1,828 @@
+USE test;
+
+
+#数值函数
+
+DROP TABLE IF EXISTS
+  SampleMath;
+CREATE TABLE
+  SampleMath
+  (m NUMERIC(10,3),
+   n INTEGER,
+   p INTEGER);
+INSERT INTO 
+  SampleMath(m, n, p)
+VALUES
+  (500,  0,  NULL),
+  (-180, 0,  NULL),
+  (NULL,NULL,NULL),
+  (NULL, 7,  3   ),
+  (NULL, 5,  2   ),
+  (NULL, 4,  NULL),
+  (8,   NULL,3   ),
+  (2.27, 1,  NULL),
+  (5.555,2,  NULL),
+  (NULL, 1,  NULL),
+  (8.76,NULL,NULL);
+SELECT
+  *
+FROM
+  SampleMath;
+/*
++-------+------+------+
+| m     | n    | p    |
++-------+------+------+
+| 500   |    0 | NULL |
+| -180  |    0 | NULL |
+| NULL  | NULL | NULL |
+| NULL  |    7 |    3 |
+| NULL  |    5 |    2 |
+| NULL  |    4 | NULL |
+| 8     | NULL |    3 |
+| 2.27  |    1 | NULL |
+| 5.555 |    2 | NULL |
+| NULL  |    1 | NULL |
+| 8.76  | NULL | NULL |
++-------+------+------+
+11 rows in set
+*/
+
+#计算绝对值abs(对象数值)
+SELECT
+  m, ABS(m) AS abs_col
+FROM
+  SampleMath;
+/*
++-------+---------+
+| m     | abs_col |
++-------+---------+
+| 500   | 500     |
+| -180  | 180     |
+| NULL  | NULL    |
+| NULL  | NULL    |
+| NULL  | NULL    |
+| NULL  | NULL    |
+| 8     | 8       |
+| 2.27  | 2.27    |
+| 5.555 | 5.555   |
+| NULL  | NULL    |
+| 8.76  | 8.76    |
++-------+---------+
+11 rows in set
+*/
+
+#求余mod(被除数,除数)
+SELECT
+  n, p, MOD(n, p) AS mod_col
+FROM
+  SampleMath;
+/*
++------+------+---------+
+| n    | p    | mod_col |
++------+------+---------+
+|    0 | NULL | NULL    |
+|    0 | NULL | NULL    |
+| NULL | NULL | NULL    |
+|    7 |    3 |       1 |
+|    5 |    2 |       1 |
+|    4 | NULL | NULL    |
+| NULL |    3 | NULL    |
+|    1 | NULL | NULL    |
+|    2 | NULL | NULL    |
+|    1 | NULL | NULL    |
+| NULL | NULL | NULL    |
++------+------+---------+
+11 rows in set
+*/
+
+#四舍五入round(对象数值,保留小数的位数)
+SELECT
+  m, n, ROUND(m, n) AS round_col
+FROM
+  SampleMath;
+/*
++-------+------+-----------+
+| m     | n    | round_col |
++-------+------+-----------+
+| 500   |    0 | 500.000   |
+| -180  |    0 | -180.000  |
+| NULL  | NULL | NULL      |
+| NULL  |    7 | NULL      |
+| NULL  |    5 | NULL      |
+| NULL  |    4 | NULL      |
+| 8     | NULL | NULL      |
+| 2.27  |    1 | 2.300     |
+| 5.555 |    2 | 5.560     |
+| NULL  |    1 | NULL      |
+| 8.76  | NULL | NULL      |
++-------+------+-----------+
+11 rows in set
+*/
+
+
+#字符串函数
+
+DROP TABLE IF EXISTS
+  SampleStr;
+CREATE TABLE
+  SampleStr
+  (str1  VARCHAR(40),
+   str2  VARCHAR(40),
+   str3  VARCHAR(40));
+INSERT INTO
+  SampleStr
+  (str1, str2, str3)
+VALUES
+  ('opx',   'rt',   NULL  ),
+  ('abc',   'def',  NULL  ),
+  ('山田',  '太郎', '是我'),
+  ('aaa',    NULL,  NULL  ),
+  ( NULL,   'xyz',  NULL  ),
+  ('@!#$#',  NULL,  NULL  ),
+  ('ABC',    NULL,  NULL  ),
+  ('aBC',    NULL,  NULL  ),
+  ('abc太郎','abc', 'ABC' ),
+  ('abcdefabc','abc','ABC'),
+  ('micmic', 'i',   'I'   );
+SELECT
+  str1, str2, str3
+FROM
+  SampleStr;
+/*
++-----------+------+------+
+| str1      | str2 | str3 |
++-----------+------+------+
+| opx       | rt   | NULL |
+| abc       | def  | NULL |
+| 山田      | 太郎 | 是我 |
+| aaa       | NULL | NULL |
+| NULL      | xyz  | NULL |
+| @!#$#     | NULL | NULL |
+| ABC       | NULL | NULL |
+| aBC       | NULL | NULL |
+| abc太郎   | abc  | ABC  |
+| abcdefabc | abc  | ABC  |
+| micmic    | i    | I    |
++-----------+------+------+
+11 rows in set
+*/
+
+#拼接concat(字符串1,字符串2,字符串3,...)
+SELECT
+  str1, str2, str3, CONCAT(str1,str2,str3) AS str_concat
+FROM
+  SampleStr;
+/*
++-----------+------+------+-----------------+
+| str1      | str2 | str3 | str_concat      |
++-----------+------+------+-----------------+
+| opx       | rt   | NULL | NULL            |
+| abc       | def  | NULL | NULL            |
+| 山田      | 太郎 | 是我 | 山田太郎是我    |
+| aaa       | NULL | NULL | NULL            |
+| NULL      | xyz  | NULL | NULL            |
+| @!#$#     | NULL | NULL | NULL            |
+| ABC       | NULL | NULL | NULL            |
+| aBC       | NULL | NULL | NULL            |
+| abc太郎   | abc  | ABC  | abc太郎abcABC   |
+| abcdefabc | abc  | ABC  | abcdefabcabcABC |
+| micmic    | i    | I    | micmiciI        |
++-----------+------+------+-----------------+
+11 rows in set
+*/
+
+#字符串长度length(字符串)
+SELECT
+  str1, LENGTH(str1) AS len_str
+FROM
+  SampleStr;
+/*
++-----------+---------+
+| str1      | len_str |
++-----------+---------+
+| opx       |       3 |
+| abc       |       3 |
+| 山田      |       6 |
+| aaa       |       3 |
+| NULL      | NULL    |
+| @!#$#     |       5 |
+| ABC       |       3 |
+| aBC       |       3 |
+| abc太郎   |       9 |
+| abcdefabc |       9 |
+| micmic    |       6 |
++-----------+---------+
+11 rows in set
+*/
+
+#小写转换lower(字符串)、大写转换upper(字符串)
+SELECT
+  str1, LOWER(str1) AS low_str
+FROM
+  SampleStr;
+/*
++-----------+-----------+
+| str1      | low_str   |
++-----------+-----------+
+| opx       | opx       |
+| abc       | abc       |
+| 山田      | 山田      |
+| aaa       | aaa       |
+| NULL      | NULL      |
+| @!#$#     | @!#$#     |
+| ABC       | abc       |
+| aBC       | abc       |
+| abc太郎   | abc太郎   |
+| abcdefabc | abcdefabc |
+| micmic    | micmic    |
++-----------+-----------+
+11 rows in set
+*/
+
+#字符串的替换replace(包含被替换字符串的字符串,被替换字符串,替换字符串)
+SELECT
+  str1, str2, str3, REPLACE(str1,str2,str3) AS rep_str
+FROM
+  SampleStr;
+/*
++-----------+------+------+-----------+
+| str1      | str2 | str3 | rep_str   |
++-----------+------+------+-----------+
+| opx       | rt   | NULL | NULL      |
+| abc       | def  | NULL | NULL      |
+| 山田      | 太郎 | 是我 | 山田      |
+| aaa       | NULL | NULL | NULL      |
+| NULL      | xyz  | NULL | NULL      |
+| @!#$#     | NULL | NULL | NULL      |
+| ABC       | NULL | NULL | NULL      |
+| aBC       | NULL | NULL | NULL      |
+| abc太郎   | abc  | ABC  | ABC太郎   |
+| abcdefabc | abc  | ABC  | ABCdefABC |
+| micmic    | i    | I    | mIcmIc    |
++-----------+------+------+-----------+
+11 rows in set
+*/
+
+#字符串的截取substring(对象字符串 from 截取的起始位置 for 提取的字符数)
+SELECT
+  str1, SUBSTRING(str1 FROM 3 FOR 2) AS sub_str
+FROM
+  SampleStr;
+/*
++-----------+---------+
+| str1      | sub_str |
++-----------+---------+
+| opx       | x       |
+| abc       | c       |
+| 山田      |         |
+| aaa       | a       |
+| NULL      | NULL    |
+| @!#$#     | #$      |
+| ABC       | C       |
+| aBC       | C       |
+| abc太郎   | c太     |
+| abcdefabc | cd      |
+| micmic    | cm      |
++-----------+---------+
+11 rows in set
+*/
+
+
+#日期函数
+
+#当前日期current_date
+SELECT
+  CURRENT_DATE;
+/*
++--------------+
+| CURRENT_DATE |
++--------------+
+| 2018-08-08   |
++--------------+
+1 row in set
+*/
+
+#当前时间current_time
+SELECT
+  CURRENT_TIME;
+/*
++--------------+
+| CURRENT_TIME |
++--------------+
+| 16:01:49     |
++--------------+
+1 row in set
+*/
+
+#当前日期和时间current_timestamp
+SELECT
+  CURRENT_TIMESTAMP;
+/*
++---------------------+
+| CURRENT_TIMESTAMP   |
++---------------------+
+| 2018-08-08 16:03:42 |
++---------------------+
+1 row in set
+*/
+
+#截取日期元素extract(日期元素 from 日期)
+SELECT
+  CURRENT_TIMESTAMP,
+  EXTRACT(YEAR FROM CURRENT_TIMESTAMP) AS year,
+  EXTRACT(MONTH FROM CURRENT_TIMESTAMP) AS month,
+  EXTRACT(DAY FROM CURRENT_TIMESTAMP) AS day,
+  EXTRACT(HOUR FROM CURRENT_TIMESTAMP) AS hour,
+  EXTRACT(MINUTE FROM CURRENT_TIMESTAMP) AS minute,
+  EXTRACT(SECOND FROM CURRENT_TIMESTAMP) AS second;
+/*
++---------------------+------+-------+-----+------+--------+--------+
+| CURRENT_TIMESTAMP   | year | month | day | hour | minute | second |
++---------------------+------+-------+-----+------+--------+--------+
+| 2018-08-08 16:13:36 | 2018 |     8 |   8 |   16 |     13 |     36 |
++---------------------+------+-------+-----+------+--------+--------+
+1 row in set
+*/
+
+
+#转换函数
+
+#类型转换cast
+SELECT
+  CAST('0001' AS signed INTEGER) AS int_col;
+/*
++---------+
+| int_col |
++---------+
+|       1 |
++---------+
+1 row in set
+*/
+SELECT
+  CAST('2009-12-14' AS DATE) AS date_col;
+/*
++------------+
+| date_col   |
++------------+
+| 2009-12-14 |
++------------+
+1 row in set
+*/
+
+#将null转换为其他值coalesce(数据1,数据2,数据3,...)
+#coalesce:返回参数（列名）中第一个非null的字段值。若遇到空值，就返回被指定的数据。
+SELECT
+  COALESCE(NULL,1)                 AS col_1, -- 返回参数中第一个非null的值1
+  COALESCE(NULL,'test',NULL)       AS col_2,
+  COALESCE(NULL,NULL,'2009-11-01') AS col_3;
+/*
++-------+-------+------------+
+| col_1 | col_2 | col_3      |
++-------+-------+------------+
+|     1 | test  | 2009-11-01 |
++-------+-------+------------+
+1 row in set
+*/
+SELECT 
+  str2, COALESCE(str2, '空')
+FROM 
+  SampleStr;
+/*
++------+----------------------+
+| str2 | COALESCE(str2, '空') |
++------+----------------------+
+| rt   | rt                   |
+| def  | def                  |
+| 太郎 | 太郎                 |
+| NULL | 空                   |
+| xyz  | xyz                  |
+| NULL | 空                   |
+| NULL | 空                   |
+| NULL | 空                   |
+| abc  | abc                  |
+| abc  | abc                  |
+| i    | i                    |
++------+----------------------+
+11 rows in set
+*/
+SELECT 
+  str2, COALESCE(str2, '空', '空空')
+FROM 
+  SampleStr;
+/*
++------+------------------------------+
+| str2 | COALESCE(str2, '空', '空空') |
++------+------------------------------+
+| rt   | rt                           |
+| def  | def                          |
+| 太郎 | 太郎                         |
+| NULL | 空                           |
+| xyz  | xyz                          |
+| NULL | 空                           |
+| NULL | 空                           |
+| NULL | 空                           |
+| abc  | abc                          |
+| abc  | abc                          |
+| i    | i                            |
++------+------------------------------+
+11 rows in set
+*/
+SELECT 
+  str1, COALESCE(str1, str2, '空', '空空'), str2
+FROM 
+  SampleStr;
+/*用str2中的相应位置的值替换str1中的空值
++-----------+------------------------------------+------+
+| str1      | COALESCE(str1, str2, '空', '空空') | str2 |
++-----------+------------------------------------+------+
+| opx       | opx                                | rt   |
+| abc       | abc                                | def  |
+| 山田      | 山田                               | 太郎 |
+| aaa       | aaa                                | NULL |
+| NULL      | xyz                                | xyz  |
+| @!#$#     | @!#$#                              | NULL |
+| ABC       | ABC                                | NULL |
+| aBC       | aBC                                | NULL |
+| abc太郎   | abc太郎                            | abc  |
+| abcdefabc | abcdefabc                          | abc  |
+| micmic    | micmic                             | i    |
++-----------+------------------------------------+------+
+11 rows in set
+*/
+
+
+#谓词：返回值为真值的函数
+
+DROP TABLE IF EXISTS SampleLike;
+CREATE TABLE
+  SampleLike
+  (strcol VARCHAR(6) NOT NULL,
+   PRIMARY KEY (strcol));
+INSERT INTO
+  SampleLike
+  (strcol)
+VALUES
+  ('abcddd'),('dddabc'),('abdddc'),('abcdd'),('ddabc'),('abddc');
+SELECT
+  strcol
+FROM
+  SampleLike;
+/*
++--------+
+| strcol |
++--------+
+| abcdd  |
+| abcddd |
+| abddc  |
+| abdddc |
+| ddabc  |
+| dddabc |
++--------+
+6 rows in set
+*/
+
+#模糊查询like
+#代表多个字符%，代表单个字符_
+SELECT
+  *
+FROM
+  SampleLike
+WHERE
+  strcol LIKE 'ddd%';
+/*
++--------+
+| strcol |
++--------+
+| dddabc |
++--------+
+1 row in set
+*/
+SELECT
+  *
+FROM
+  SampleLike
+WHERE 
+  strcol LIKE 'ddd___';
+/*
++--------+
+| strcol |
++--------+
+| dddabc |
++--------+
+1 row in set
+*/
+
+#范围查询between
+#包含临界值
+SELECT
+  shohin_mei, hanbai_tanka
+FROM
+  Shohin 
+WHERE
+  hanbai_tanka 
+BETWEEN
+  100 AND 1000;
+/*
++------------+--------------+
+| shohin_mei | hanbai_tanka |
++------------+--------------+
+| T恤衫      |         1000 |
+| 打孔器     |          500 |
+| 叉子       |          500 |
+| 擦菜板     |          880 |
+| 圆珠笔     |          100 |
++------------+--------------+
+5 rows in set
+*/
+
+#判断是否为null
+SELECT
+  shohin_mei, shiire_tanka
+FROM
+  Shohin 
+WHERE
+  shiire_tanka IS NULL;
+/*
++------------+--------------+
+| shohin_mei | shiire_tanka |
++------------+--------------+
+| 叉子       | NULL         |
+| 圆珠笔     | NULL         |
++------------+--------------+
+2 rows in set
+*/
+
+#or的简便用法in
+SELECT
+  shohin_mei, shiire_tanka
+FROM
+  Shohin 
+WHERE
+  shiire_tanka
+IN  
+  (320, 500, 5000);
+-- WHERE shiire_tanka = 320 OR shiire_tanka = 500 OR shiire_tanka = 5000
+/*
++------------+--------------+
+| shohin_mei | shiire_tanka |
++------------+--------------+
+| T恤衫      |          500 |
+| 打孔器     |          320 |
+| 高压锅     |         5000 |
++------------+--------------+
+3 rows in set
+*/
+SELECT
+  shohin_mei, shiire_tanka
+FROM
+  Shohin 
+WHERE
+  shiire_tanka 
+NOT IN
+  (320, 500, 5000);
+/*
++------------+--------------+
+| shohin_mei | shiire_tanka |
++------------+--------------+
+| 运动T恤    |         2800 |
+| 菜刀       |         2800 |
+| 擦菜板     |          790 |
++------------+--------------+
+3 rows in set
+*/
+
+DROP TABLE IF EXISTS TenpoShohin;
+CREATE TABLE
+  TenpoShohin
+  (tenpo_id  CHAR(6)     NOT NULL,
+   tenpomei  VARCHAR(6)  NOT NULL,
+   shohin_id CHAR(4)     NOT NULL,
+   suryo     INTEGER,
+   PRIMARY KEY (tenpo_id, shohin_id));
+ALTER TABLE
+  TenpoShohin
+MODIFY COLUMN
+  tenpo_id  CHAR(4);
+INSERT INTO
+  TenpoShohin
+VALUES
+  ('000A','东京','0001',30),
+  ('000A','东京','0002',50),
+  ('000A','东京','0003',15),
+  ('000B','名古屋','0002',30),
+  ('000B','名古屋','0003',120),
+  ('000B','名古屋','0004',20),
+  ('000B','名古屋','0006',10),
+  ('000B','名古屋','0007',40),
+  ('000C','大阪','0003',20),
+  ('000C','大阪','0004',50),
+  ('000C','大阪','0006',90),
+  ('000C','大阪','0007',70),
+  ('000D','福冈','0001',100);
+
+#使用子查询作为IN谓词的参数
+SELECT
+  shohin_mei, hanbai_tanka
+FROM
+  Shohin 
+WHERE  -- NOT IN 以外的
+  shohin_id IN (SELECT
+                  shohin_id
+                FROM
+                  TenpoShohin 
+                WHERE
+                  tenpo_id = '000C');
+/*
++------------+--------------+
+| shohin_mei | hanbai_tanka |
++------------+--------------+
+| 运动T恤    |         4000 |
+| 菜刀       |         3000 |
+| 叉子       |          500 |
+| 擦菜板     |          880 |
++------------+--------------+
+4 rows in set
+*/
+
+#exist谓词
+SELECT
+  shohin_mei, hanbai_tanka
+FROM
+  Shohin AS S
+ -- NOT EXISTS
+WHERE EXISTS (SELECT  -- 关联子查询
+                *     -- 可以填写适当的常数，即选择哪些列是无所谓的，经常使用的是*
+              FROM
+                TenpoShohin AS TS
+              WHERE
+                TS.tenpo_id = '000C' AND TS.shohin_id = S.shohin_id);
+/*
++------------+--------------+
+| shohin_mei | hanbai_tanka |
++------------+--------------+
+| 运动T恤    |         4000 |
+| 菜刀       |         3000 |
+| 叉子       |          500 |
+| 擦菜板     |          880 |
++------------+--------------+
+4 rows in set
+*/
+
+#case表达式：也是函数的一种，是一种进行运算的功能
+
+#例：将Shohin表中的记录改为：A：衣服，B：办公用品，C：厨房用具
+SELECT
+  shohin_mei,
+ CASE
+   WHEN shohin_bunrui = '衣服' THEN CONCAT('A：',shohin_bunrui)
+   WHEN shohin_bunrui = '办公用品' THEN CONCAT('B：',shohin_bunrui)
+   WHEN shohin_bunrui = '厨房用具' THEN CONCAT('C：',shohin_bunrui)
+   ELSE NULL
+ END AS abc_shohin_bunrui  -- 注意end不能省略
+FROM
+  Shohin;
+/*
++------------+-------------------+
+| shohin_mei | abc_shohin_bunrui |
++------------+-------------------+
+| T恤衫      | A：衣服           |
+| 打孔器     | B：办公用品       |
+| 运动T恤    | A：衣服           |
+| 菜刀       | C：厨房用具       |
+| 高压锅     | C：厨房用具       |
+| 叉子       | C：厨房用具       |
+| 擦菜板     | C：厨房用具       |
+| 圆珠笔     | B：办公用品       |
++------------+-------------------+
+8 rows in set
+*/
+
+#当对每类商品求合计值时，group by的显示结果是以“行”的形式输出的
+SELECT
+  shohin_bunrui, SUM(hanbai_tanka) AS sum_tanka
+FROM
+  Shohin 
+GROUP BY
+  shohin_bunrui;
+/*
++---------------+-----------+
+| shohin_bunrui | sum_tanka |
++---------------+-----------+
+| 衣服          | 5000      |
+| 办公用品      | 600       |
+| 厨房用具      | 11180     |
++---------------+-----------+
+3 rows in set
+*/
+#使用case
+SELECT
+  SUM(CASE WHEN shohin_bunrui = '衣服'
+             THEN hanbai_tanka
+           ELSE 0
+       END) AS sum_tanka_ihuku,
+  SUM(CASE WHEN shohin_bunrui = '厨房用具'
+             THEN hanbai_tanka
+           ELSE 0
+       END) AS sum_tanka_kitchen,
+  SUM(CASE WHEN shohin_bunrui = '办公用品'
+             THEN hanbai_tanka
+           ELSE 0
+       END) AS sum_tanka_jimu
+FROM
+  Shohin;
+/*
++-----------------+-------------------+----------------+
+| sum_tanka_ihuku | sum_tanka_kitchen | sum_tanka_jimu |
++-----------------+-------------------+----------------+
+| 5000            | 11180             | 600            |
++-----------------+-------------------+----------------+
+1 row in set
+*/
+#简单case表达式（针对单列）
+SELECT
+  shohin_mei,
+ CASE shohin_bunrui
+   WHEN '衣服'     THEN CONCAT('A：',shohin_bunrui)
+   WHEN '办公用品' THEN CONCAT('B：',shohin_bunrui)
+   WHEN '厨房用具' THEN CONCAT('C：',shohin_bunrui)
+   ELSE NULL
+ END AS abc_shohin_bunrui  -- 注意end不能省略
+FROM
+  Shohin;
+
+#练习
+#6.1 找原因
+SELECT
+  shohin_mei, shiire_tanka
+FROM
+  Shohin;
+/*
++------------+--------------+
+| shohin_mei | shiire_tanka |
++------------+--------------+
+| T恤衫      |          500 |
+| 打孔器     |          320 |
+| 运动T恤    |         2800 |
+| 菜刀       |         2800 |
+| 高压锅     |         5000 |
+| 叉子       | NULL         |
+| 擦菜板     |          790 |
+| 圆珠笔     | NULL         |
++------------+--------------+
+8 rows in set
+*/
+SELECT
+  shohin_mei, shiire_tanka
+FROM
+  Shohin 
+WHERE
+  shiire_tanka 
+ NOT IN
+  (500, 2800, 5000, NULL);
+/*
+Empty set
+无法识别null值，所以无法对原数据做出判断
+*/
+SELECT
+  shohin_mei, shiire_tanka
+FROM
+  Shohin 
+WHERE
+  shiire_tanka 
+ NOT IN
+  (500, 2800, 5000);
+/*
++------------+--------------+
+| shohin_mei | shiire_tanka |
++------------+--------------+
+| 打孔器     |          320 |
+| 擦菜板     |          790 |
++------------+--------------+
+2 rows in set
+结果没有null值
+*/
+
+#6.2
+SELECT
+  COUNT(DISTINCT CASE 
+                  WHEN hanbai_tanka <= 1000 THEN shohin_mei
+                  ELSE NULL
+                 END) AS low_price,
+  COUNT(DISTINCT CASE 
+                  WHEN hanbai_tanka > 1000 AND hanbai_tanka <= 3000 THEN shohin_mei
+                  ELSE NULL
+                 END) AS mid_price,
+  COUNT(DISTINCT CASE 
+                  WHEN hanbai_tanka > 3000 THEN shohin_mei
+                  ELSE NULL
+                 END) AS high_price
+FROM
+  Shohin;
+/*
++-----------+-----------+------------+
+| low_price | mid_price | high_price |
++-----------+-----------+------------+
+|         5 |         1 |          2 |
++-----------+-----------+------------+
+1 row in set
+*/
